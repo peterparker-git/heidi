@@ -1,8 +1,30 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 
 export default function Credits() {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef(null);
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      } else {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -14,6 +36,7 @@ export default function Credits() {
     const handleForceBg = () => {
       if (videoRef.current && !videoRef.current.paused) {
         videoRef.current.pause();
+        setIsPlaying(false);
       }
     };
     window.addEventListener('bgm-force-play', handleForceBg);
@@ -43,35 +66,36 @@ export default function Credits() {
           loop
           playsInline
           className="w-full h-auto cursor-pointer"
-          onClick={() => {
-            if (videoRef.current.paused) videoRef.current.play();
-            else videoRef.current.pause();
+          onClick={togglePlay}
+          onPlay={() => {
+            window.dispatchEvent(new CustomEvent('media-started'));
+            setIsPlaying(true);
           }}
-          onPlay={() => window.dispatchEvent(new CustomEvent('media-started'))}
-          onPause={() => window.dispatchEvent(new CustomEvent('media-ended'))}
-          onEnded={() => window.dispatchEvent(new CustomEvent('media-ended'))}
+          onPause={() => {
+            window.dispatchEvent(new CustomEvent('media-ended'));
+            setIsPlaying(false);
+          }}
+          onEnded={() => {
+            window.dispatchEvent(new CustomEvent('media-ended'));
+            setIsPlaying(false);
+          }}
         >
           Your browser does not support the video tag.
         </video>
 
         {/* Custom Controls Overlay */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button 
-            onClick={() => {
-              if (videoRef.current.paused) videoRef.current.play();
-              else videoRef.current.pause();
-            }}
-            className="p-3 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-black/70 transition-all shadow-lg text-xs font-bold"
+            onClick={togglePlay}
+            className="p-4 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-pink-500 transition-all shadow-xl border border-white/20"
           >
-            Play / Pause
+            {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} className="ml-1" />}
           </button>
           <button 
-            onClick={() => {
-              videoRef.current.muted = !videoRef.current.muted;
-            }}
-            className="p-3 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-black/70 transition-all shadow-lg text-xs font-bold"
+            onClick={toggleMute}
+            className="p-4 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-blue-500 transition-all shadow-xl border border-white/20"
           >
-            Mute / Unmute
+            {isMuted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
           </button>
         </div>
         
