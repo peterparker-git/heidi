@@ -56,7 +56,7 @@ export default function Credits() {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm bg-black rounded-xl overflow-hidden shadow-2xl border border-white/20 relative mb-8 group"
+        className="w-full max-w-sm bg-black rounded-xl overflow-hidden shadow-2xl border border-white/20 relative mb-4"
       >
         <video 
           ref={videoRef}
@@ -83,27 +83,43 @@ export default function Credits() {
           Your browser does not support the video tag.
         </video>
 
-        {/* Custom Controls Overlay */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button 
-            onClick={togglePlay}
-            className="p-4 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-pink-500 transition-all shadow-xl border border-white/20"
-          >
-            {isPlaying ? <FaPause size={20} /> : <FaPlay size={20} className="ml-1" />}
-          </button>
-          <button 
-            onClick={toggleMute}
-            className="p-4 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-blue-500 transition-all shadow-xl border border-white/20"
-          >
-            {isMuted ? <FaVolumeMute size={20} /> : <FaVolumeUp size={20} />}
-          </button>
-        </div>
-        
         {/* Fallback info in case video fails to load or isn't there */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none -z-10">
           <p className="text-white/50 text-sm">Add your video to <br/> src/vdo2.mp4</p>
         </div>
       </motion.div>
+
+      {/* Separate Controls for Mobile Visibility */}
+      <div className="flex flex-wrap justify-center gap-3 mb-8">
+        <button 
+          onClick={() => { videoRef.current?.play(); setIsPlaying(true); }}
+          className={`p-4 rounded-full backdrop-blur-md text-white transition-all shadow-xl border border-white/20 ${isPlaying ? 'bg-pink-500/80' : 'bg-black/60'}`}
+          title="Play"
+        >
+          <FaPlay size={20} />
+        </button>
+        <button 
+          onClick={() => { videoRef.current?.pause(); setIsPlaying(false); }}
+          className={`p-4 rounded-full backdrop-blur-md text-white transition-all shadow-xl border border-white/20 ${!isPlaying ? 'bg-pink-500/80' : 'bg-black/60'}`}
+          title="Pause"
+        >
+          <FaPause size={20} />
+        </button>
+        <button 
+          onClick={() => { if(videoRef.current) videoRef.current.muted = true; setIsMuted(true); }}
+          className={`p-4 rounded-full backdrop-blur-md text-white transition-all shadow-xl border border-white/20 ${isMuted ? 'bg-blue-500/80' : 'bg-black/60'}`}
+          title="Mute"
+        >
+          <FaVolumeMute size={20} />
+        </button>
+        <button 
+          onClick={() => { if(videoRef.current) videoRef.current.muted = false; setIsMuted(false); }}
+          className={`p-4 rounded-full backdrop-blur-md text-white transition-all shadow-xl border border-white/20 ${!isMuted ? 'bg-blue-500/80' : 'bg-black/60'}`}
+          title="Unmute"
+        >
+          <FaVolumeUp size={20} />
+        </button>
+      </div>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}

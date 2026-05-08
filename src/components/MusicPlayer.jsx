@@ -92,12 +92,35 @@ export default function MusicPlayer() {
         </div>
       </div>
 
-      <div className="flex gap-3 text-white">
-        <button onClick={toggleMusic} className="hover:text-(--color-blue) transition-colors">
-          {isPlaying ? <FaPause size={14} /> : <FaPlay size={14} />}
+      <div className="flex gap-2 text-white">
+        <button 
+          onClick={() => { if(audioRef.current) { audioRef.current.play(); setIsPlaying(true); window.dispatchEvent(new CustomEvent('bgm-force-play')); } }} 
+          className={`p-2 rounded-lg transition-colors ${isPlaying ? 'text-(--color-blue)' : 'text-white/50'}`}
+          title="Play"
+        >
+          <FaPlay size={14} />
         </button>
-        <button onClick={toggleMute} className="hover:text-(--color-orange) transition-colors">
-          {isMuted ? <FaVolumeMute size={16} /> : <FaVolumeUp size={16} />}
+        <button 
+          onClick={() => { if(audioRef.current) { audioRef.current.pause(); setIsPlaying(false); } }} 
+          className={`p-2 rounded-lg transition-colors ${!isPlaying ? 'text-(--color-blue)' : 'text-white/50'}`}
+          title="Pause"
+        >
+          <FaPause size={14} />
+        </button>
+        <div className="w-[1px] h-4 bg-white/10 my-auto" />
+        <button 
+          onClick={() => { if(audioRef.current) { audioRef.current.muted = true; setIsMuted(true); } }} 
+          className={`p-2 rounded-lg transition-colors ${isMuted ? 'text-(--color-orange)' : 'text-white/50'}`}
+          title="Mute"
+        >
+          <FaVolumeMute size={16} />
+        </button>
+        <button 
+          onClick={() => { if(audioRef.current) { audioRef.current.muted = false; setIsMuted(false); } }} 
+          className={`p-2 rounded-lg transition-colors ${!isMuted ? 'text-(--color-orange)' : 'text-white/50'}`}
+          title="Unmute"
+        >
+          <FaVolumeUp size={16} />
         </button>
       </div>
     </motion.div>
